@@ -20,8 +20,7 @@ H: . . . . . . . .
 [0] Put a stone
 [1] Give up
 0
-Input the point to put your disk:
-(ex. E5)
+Input the point to put your disk (ex. D6):
 D6
 
 Current Player: 'o'
@@ -39,8 +38,7 @@ H: . . . . . . . .
 [0] Put a stone
 [1] Give up
 0
-Input the point to put your disk:
-(ex. E5)
+Input the point to put your disk (ex. D6):
 C4
 
 Current Player: 'x'

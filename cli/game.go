@@ -56,7 +56,7 @@ func readAction(ppt *prompt.Prompt, playable bool) (act othellodto.Action, x int
 		if pick == 1 {
 			act = othellodto.ActionGiveUp
 		} else {
-			match, err := ppt.InputStringRegexMatch("([A-H])([1-8])", "Input the point to put your disk:\n(ex. E5)")
+			match, err := ppt.InputStringRegexMatch("([A-H])([1-8])", "Input the point to put your disk (ex. D6): ")
 			if err != nil || len(match) != 3 {
 				return 0, 0, 0, fmt.Errorf("failed to read input")
 			}
