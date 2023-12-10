@@ -88,7 +88,7 @@ func singleGamePlay(ppt *prompt.Prompt) error {
 	for true {
 		// 画面描画
 		fmt.Printf("\nCurrent Player: '%s'\n", playerToStr(curState.CurrentTurn))
-		fmt.Println(boardToStr(curState.Board))
+		fmt.Print(boardToStr(curState.Board))
 
 		// 入力受付
 		act, x, y, err := readAction(ppt, ctl.Playable())
