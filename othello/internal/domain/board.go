@@ -14,10 +14,10 @@ func NewBoard() *Board {
 		}
 	}
 	const center = BoardSize/2 - 1
-	b[center][center] = DiskBlack
-	b[center+1][center] = DiskWhite
-	b[center][center+1] = DiskWhite
-	b[center+1][center+1] = DiskBlack
+	b[center][center] = DiskWhite
+	b[center+1][center] = DiskBlack
+	b[center][center+1] = DiskBlack
+	b[center+1][center+1] = DiskWhite
 	return &b
 }
 

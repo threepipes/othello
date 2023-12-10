@@ -57,7 +57,7 @@ func (p Prompt) InputStringRegexMatch(regex, msg string) ([]string, error) {
 		}
 		match := r.FindStringSubmatch(s)
 		if len(match) == 0 {
-			p.io.WriteString(fmt.Sprintf("Invalid input: '%s'", s))
+			p.io.WriteString(fmt.Sprintf("Invalid input: '%s'\n", s))
 			p.io.WriteString(msg)
 			p.io.Flush()
 			continue
