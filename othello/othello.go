@@ -6,19 +6,23 @@ import (
 	"othello/othello/internal/usecase"
 )
 
-func NewGame() *usecase.Game {
-	return usecase.NewGame()
+type GameController struct {
+	game *usecase.Game
 }
 
-func UpdateGame(g *usecase.Game, a othellodto.Action, x int, y int) (*othellodto.GameState, error) {
-	finished, winner, err := g.Update(a, x, y)
+func NewGame() *GameController {
+	return &GameController{usecase.NewGame()}
+}
+
+func (c *GameController) UpdateGame(a othellodto.Action, x int, y int) (*othellodto.GameState, error) {
+	finished, winner, err := c.game.Update(a.Domain(), x, y)
 	if err != nil {
 		return nil, fmt.Errorf("failed to update game: %w", err)
 	}
 
-	bd := g.Board()
+	bd := c.game.Board()
 	return &othellodto.GameState{
-		CurrentTurn:  othellodto.DiskFromDomain(g.CurrentTurn()),
+		CurrentTurn:  othellodto.DiskFromDomain(c.game.CurrentTurn()),
 		Board:        othellodto.BoardFromDomain(&bd),
 		GameFinished: finished,
 		Winner:       othellodto.DiskFromDomain(winner),

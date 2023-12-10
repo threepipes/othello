@@ -2,19 +2,18 @@ package usecase
 
 import (
 	"fmt"
-	othellodto "othello/othello/dto"
 	othelloerror "othello/othello/error"
 	"othello/othello/internal/domain"
 )
 
-type Game struct {
-	current domain.Disk
-	board   *domain.Board
-}
-
 type point struct {
 	x int
 	y int
+}
+
+type Game struct {
+	current domain.Disk
+	board   *domain.Board
 }
 
 func (g *Game) CurrentTurn() domain.Disk {
@@ -29,7 +28,7 @@ func outOfBoard(x, y int) bool {
 	return x < 0 || x >= domain.BoardSize || y < 0 || y >= domain.BoardSize
 }
 
-func NewPoint(x, y int) (point, error) {
+func newPoint(x, y int) (point, error) {
 	if outOfBoard(x, y) {
 		return point{}, fmt.Errorf("invalid range: (%d, %d)", x, y)
 	}
@@ -115,9 +114,9 @@ func availableSpaces(bd *domain.Board, d domain.Disk) map[point]struct{} {
 }
 
 // ゲーム終了であれば true を返す
-func (g *Game) checkFinished() bool {
-	avl1 := availableSpaces(g.board, domain.DiskBlack)
-	avl2 := availableSpaces(g.board, domain.DiskWhite)
+func checkFinished(bd *domain.Board) bool {
+	avl1 := availableSpaces(bd, domain.DiskBlack)
+	avl2 := availableSpaces(bd, domain.DiskWhite)
 	return len(avl1) == 0 && len(avl2) == 0
 }
 
@@ -142,33 +141,40 @@ func NewGame() *Game {
 	}
 }
 
-type GameController struct {
-	g *Game
+func Winner(bd *domain.Board) domain.Disk {
+	blacks, whites := countDisks(bd)
+	if blacks == whites {
+		return domain.DiskNone
+	} else if blacks > whites {
+		return domain.DiskBlack
+	} else {
+		return domain.DiskWhite
+	}
 }
 
 // Update は入力をもとに現在の盤面を update する。
-func (g *Game) Update(a othellodto.Action, x int, y int) (finished bool, winner domain.Disk, err error) {
+func (g *Game) Update(a domain.Action, x int, y int) (finished bool, winner domain.Disk, err error) {
 	cur := g.current
 	op, err := cur.OppositeColer()
 	if err != nil {
 		return false, 0, fmt.Errorf("invalid current state: %w", err)
 	}
 	switch a {
-	case othellodto.ActionGiveUp:
+	case domain.ActionGiveUp:
 		return true, op, nil
-	case othellodto.ActionPass:
+	case domain.ActionPass:
 		g.current = op
 		if len(availableSpaces(g.board, cur)) != 0 {
 			return false, 0, fmt.Errorf("pass is not allowed")
 		}
 		return false, 0, nil
-	case othellodto.ActionPutDisk:
+	case domain.ActionPutDisk:
 		g.current = op
 		break
 	default:
 		return false, 0, fmt.Errorf("unknow action is passed")
 	}
-	p, err := NewPoint(x, y)
+	p, err := newPoint(x, y)
 	if err != nil {
 		return false, 0, err
 	}
@@ -183,17 +189,8 @@ func (g *Game) Update(a othellodto.Action, x int, y int) (finished bool, winner 
 	}
 	g.current = op
 	// 勝利判定
-	if g.checkFinished() {
-		blacks, whites := countDisks(g.board)
-		var winner domain.Disk
-		if blacks == whites {
-			winner = domain.DiskNone
-		} else if blacks > whites && cur == domain.DiskBlack || whites > blacks && cur == domain.DiskWhite {
-			winner = cur
-		} else {
-			winner = op
-		}
-		return true, winner, nil
+	if checkFinished(g.board) {
+		return true, Winner(g.board), nil
 	}
 	return false, 0, nil
 }

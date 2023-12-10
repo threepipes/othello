@@ -11,6 +11,10 @@ const (
 	ActionPass
 )
 
+func (a Action) Domain() domain.Action {
+	return domain.Action(a)
+}
+
 type Disk int8
 
 const (
