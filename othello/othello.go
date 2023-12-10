@@ -10,8 +10,13 @@ type GameController struct {
 	game *usecase.Game
 }
 
-func NewGame() *GameController {
-	return &GameController{usecase.NewGame()}
+func NewGame() (*GameController, *othellodto.GameState) {
+	ctl := &GameController{usecase.NewGame()}
+	bd := ctl.game.Board()
+	return ctl, &othellodto.GameState{
+		CurrentTurn: othellodto.DiskFromDomain(ctl.game.CurrentTurn()),
+		Board:       othellodto.BoardFromDomain(&bd),
+	}
 }
 
 func (c *GameController) UpdateGame(a othellodto.Action, x int, y int) (*othellodto.GameState, error) {
@@ -27,4 +32,10 @@ func (c *GameController) UpdateGame(a othellodto.Action, x int, y int) (*othello
 		GameFinished: finished,
 		Winner:       othellodto.DiskFromDomain(winner),
 	}, nil
+}
+
+// 現在のプレイヤーが石を置ける状態か
+func (c *GameController) Playable() bool {
+	bd := c.game.Board()
+	return len(usecase.AvailableSpaces(&bd, c.game.CurrentTurn())) > 0
 }

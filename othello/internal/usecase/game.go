@@ -86,7 +86,7 @@ func putDisk(bd *domain.Board, d domain.Disk, p point) error {
 }
 
 // 石を置くことができる場所の一覧 (計算量: BoardSize^3)
-func availableSpaces(bd *domain.Board, d domain.Disk) map[point]struct{} {
+func AvailableSpaces(bd *domain.Board, d domain.Disk) map[point]struct{} {
 	res := make(map[point]struct{})
 	op, _ := d.OppositeColer() // TODO: error handling
 	for y := 0; y < domain.BoardSize; y++ {
@@ -115,8 +115,8 @@ func availableSpaces(bd *domain.Board, d domain.Disk) map[point]struct{} {
 
 // ゲーム終了であれば true を返す
 func checkFinished(bd *domain.Board) bool {
-	avl1 := availableSpaces(bd, domain.DiskBlack)
-	avl2 := availableSpaces(bd, domain.DiskWhite)
+	avl1 := AvailableSpaces(bd, domain.DiskBlack)
+	avl2 := AvailableSpaces(bd, domain.DiskWhite)
 	return len(avl1) == 0 && len(avl2) == 0
 }
 
@@ -163,13 +163,12 @@ func (g *Game) Update(a domain.Action, x int, y int) (finished bool, winner doma
 	case domain.ActionGiveUp:
 		return true, op, nil
 	case domain.ActionPass:
-		g.current = op
-		if len(availableSpaces(g.board, cur)) != 0 {
+		if len(AvailableSpaces(g.board, cur)) != 0 {
 			return false, 0, fmt.Errorf("pass is not allowed")
 		}
+		g.current = op
 		return false, 0, nil
 	case domain.ActionPutDisk:
-		g.current = op
 		break
 	default:
 		return false, 0, fmt.Errorf("unknow action is passed")
@@ -179,7 +178,7 @@ func (g *Game) Update(a domain.Action, x int, y int) (finished bool, winner doma
 		return false, 0, err
 	}
 	// 石をおいた場合にひっくり返すことができる場所かチェックする
-	aval := availableSpaces(g.board, cur)
+	aval := AvailableSpaces(g.board, cur)
 	if _, ok := aval[p]; !ok {
 		return false, 0, othelloerror.ErrInvalidPlaceForDisk
 	}

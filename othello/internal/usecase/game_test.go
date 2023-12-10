@@ -101,7 +101,7 @@ func Test_availableSpaces(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := availableSpaces(tt.args.bd, tt.args.d); !reflect.DeepEqual(got, tt.want) {
+			if got := AvailableSpaces(tt.args.bd, tt.args.d); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("availableSpaces() = %v, want %v", got, tt.want)
 			}
 		})
